@@ -1,175 +1,224 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<style>
-/* Boot Overlay Cover */
-#boot-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: #011221;
-  z-index: 9999;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-family: 'Courier New', 'Consolas', monospace;
-  color: #00B050; /* CRT Green Accent */
-  transition: opacity 0.6s ease-out;
-}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hello out there. I can see you.</title>
+  <style>
+    /* Reset & Base Styles */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-/* Individual ASCII cell for random pop-in */
-.ascii-cell {
-  display: inline-block;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.05s ease-in;
-}
+    body {
+      background-color: #050811;
+      color: #00ffcc;
+      font-family: 'Courier New', Courier, monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      padding: 10px;
+      overflow-x: hidden;
+    }
 
-.ascii-cell.visible {
-  opacity: 1;
-  visibility: visible;
-}
+    /* Full-Width Terminal Wrapper */
+    .terminal-container {
+      width: 98vw;
+      max-width: 100%;
+      background: #080d1a;
+      border: 1px solid #00ffcc;
+      box-shadow: 0 0 15px rgba(0, 255, 204, 0.2);
+      border-radius: 4px;
+      padding: 20px;
+      position: relative;
+    }
 
-/* Keeps hidden map lines invisible until revealed */
-.ascii-line {
-  display: inline-block;
-  width: 100%;
-}
-.hidden-line {
-  opacity: 0;
-  visibility: hidden;
-}
+    /* Header & Status Bar */
+    .terminal-header {
+      border-bottom: 1px solid #00ffcc;
+      padding-bottom: 10px;
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
 
-#boot-terminal {
-  text-align: left;
-  font-size: 16px;
-  line-height: 1.5;
-}
+    .status-online {
+      color: #00ffcc;
+      animation: blink 1.5s infinite;
+      transition: color 0.2s ease, text-shadow 0.2s ease;
+    }
 
-/* Retro Start Button */
-#start-btn {
-  background: transparent;
-  color: #00B050;
-  border: 2px solid #00B050;
-  font-family: 'Courier New', monospace;
-  font-size: 18px;
-  font-weight: bold;
-  padding: 12px 24px;
-  cursor: pointer;
-  letter-spacing: 2px;
-  transition: all 0.2s ease;
-}
+    /* Glitch state override for status bar */
+    .status-online.glitch {
+      color: #ff0033 !important;
+      text-shadow: 0 0 8px #ff0033, 0 0 15px #ff0033;
+      font-weight: bold;
+      animation: none !important;
+    }
 
-#start-btn:hover {
-  background: #00B050;
-  color: #011221;
-  box-shadow: 0 0 15px #00B050;
-}
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
 
-#boot-text {
-  margin-top: 20px;
-  white-space: pre-line;
-}
-  /* Force everything on screen to render bold */
-  * {
-    font-weight: bold !important;
-  }
+    /* Start Button Overlay Container */
+    #start-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 250px;
+      margin: 20px 0;
+      transition: opacity 0.5s ease;
+    }
 
-  html, body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    background-color: #011221; 
-    overflow: hidden;
-  }
+    .view-map-btn {
+      background: #020408;
+      color: #00ffcc;
+      border: 2px solid #00ffcc;
+      padding: 18px 36px;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 1.2rem;
+      font-weight: bold;
+      letter-spacing: 3px;
+      cursor: pointer;
+      box-shadow: 0 0 15px rgba(0, 255, 204, 0.3);
+      transition: all 0.2s ease;
+    }
 
- /* Viewport window - allow full scrolling without clipping the left side */
-.viewport-window {
-  width: 100vw;
-  height: 100vh;
-  overflow: auto; 
-  display: flex;
-  justify-content: flex-start; /* CRITICAL: Prevents left-side clipping */
-  align-items: flex-start;
-  box-sizing: border-box;
-  -webkit-overflow-scrolling: touch;
-  padding: 10px;
-}
+    .view-map-btn:hover {
+      background: #00ffcc;
+      color: #050811;
+      box-shadow: 0 0 25px rgba(0, 255, 204, 0.8);
+      transform: scale(1.05);
+    }
 
-/* Default initial scale */
-#zoom-container {
-  transform-origin: 0 0; 
-  transition: transform 0.05s ease-out;
-  display: block;
-  transform: scale(0.65); /* Shrinks starting view so map fits better */
-}
+    /* Boot Sequence Screen */
+    #boot-sequence {
+      min-height: 180px;
+      margin-bottom: 15px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: #70a3cc;
+      display: none; /* Hidden until button is clicked */
+    }
 
-/* Auto-scale down on smaller mobile screens */
-@media (max-width: 768px) {
-  #zoom-container {
-    transform: scale(0.40); /* Scaled down further for narrow screens */
-  }
-}
+    .boot-line {
+      margin-bottom: 4px;
+    }
 
-  /* Strict Monospace ASCII Grid */
-  pre.ascii-map {
-    font-family: 'Courier New', 'Consolas', 'Lucida Console', monospace !important;
-    font-size: 11px !important;
-    line-height: 0.85 !important;
-    white-space: pre !important;
-    word-break: normal !important;
-    overflow-wrap: normal !important;
-    letter-spacing: 0px !important;
-    word-spacing: 0px !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    background-color: transparent !important;
-    color: #FFFFFF !important; /* Default color for un-styled text */
-  }
+    .cursor {
+      display: inline-block;
+      width: 8px;
+      height: 15px;
+      background-color: #00ffcc;
+      vertical-align: middle;
+      animation: blink 0.8s infinite;
+    }
 
-  /* Inherit rules for spans while allowing inline style overrides (like small 'o' markers) */
-  pre.ascii-map span {
-    font-family: inherit !important;
-    line-height: inherit !important;
-    white-space: pre !important;
-  }
+    /* Map Display Viewport */
+    .map-wrapper {
+      position: relative;
+      background-color: #020408;
+      border: 1px dashed rgba(0, 255, 204, 0.4);
+      padding: 15px;
+      overflow: hidden;
+      cursor: grab;
+      user-select: none;
+      min-height: 500px;
+      display: none; /* Hidden during initial start state */
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
 
-  /* Scrollbars */
-  .viewport-window::-webkit-scrollbar { width: 12px; height: 12px; }
-  .viewport-window::-webkit-scrollbar-track { background: #011221; }
-  .viewport-window::-webkit-scrollbar-thumb { background: #11304f; border-radius: 6px; border: 3px solid #011221; }
-  
-  /* Hide Tiiny Host promo elements */
-div[class*="tiiny"], 
-a[href*="tiiny.host"], 
-iframe[src*="tiiny.host"],
-div[style*="position: fixed"][style*="bottom"],
-div[style*="position: fixed"][style*="top"] {
-  display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-}
-</style>
+    .map-wrapper.visible {
+      opacity: 1;
+    }
+
+    .map-wrapper:active {
+      cursor: grabbing;
+    }
+
+    /* Transform Container for Smooth Pan/Zoom */
+    #map-viewport {
+      transform-origin: 0 0;
+      display: inline-block;
+      will-change: transform;
+      position: relative;
+    }
+
+    /* ASCII Map Canvas */
+    pre#ascii-map {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 11px;
+      line-height: 1.0;
+      letter-spacing: 0px;
+      white-space: pre;
+      color: #e0e0e0;
+      display: inline-block;
+    }
+
+    /* Grid Overlay Container for Reveal Animation */
+    #grid-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: grid;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .grid-block {
+      background-color: #020408;
+      opacity: 1;
+      transition: opacity 0.3s ease-out;
+    }
+
+    .grid-block.revealed {
+      opacity: 0;
+    }
+
+    /* Faction Colors */
+    .axion    { color: #ff3333; font-weight: bold; } /* Axion Industries */
+    .savant   { color: #3399ff; font-weight: bold; } /* Savant Systems */
+    .saint    { color: #ffffff; font-weight: bold; } /* Saint Corp */
+    .satori   { color: #cc33ff; font-weight: bold; } /* Satori Enterprises */
+    .sedna    { color: #ff9900; font-weight: bold; } /* Sedna Heavy Industries */
+    .anansi   { color: #33cc33; font-weight: bold; } /* Anansi Agritech */
+    .meridian { color: #ffff33; font-weight: bold; } /* Meridian Freight */
+    .neutral  { color: #445566; }                   /* Unclaimed/Contested */
+
+  </style>
 </head>
 <body>
 
-<!-- Terminal Boot Overlay -->
-<div id="boot-overlay">
-  <div id="boot-terminal">
-    <button id="start-btn" onclick="runBootSequence()">[ LOAD MAP ]</button>
-    <div id="boot-text"></div>
-  </div>
-</div>
-<div class="viewport-window" id="wrapper">
-  <div id="zoom-container">
-    <pre class="ascii-map">
+  <div class="terminal-container">
+    <div class="terminal-header">
+      <div>SYS_ID: EULOGY</div>
+      <div>STATUS: <span class="status-online">STANDBY</span></div>
+    </div>
+
+    <!-- Start Button Container -->
+    <div id="start-container">
+      <button class="view-map-btn" id="start-btn">[ VIEW MAP ]</button>
+    </div>
+
+    <!-- Boot Log Target -->
+    <div id="boot-sequence"></div>
+
+    <!-- Map Viewport -->
+    <div class="map-wrapper" id="map-wrapper">
+      <div id="map-viewport">
+        <pre id="ascii-map">
 <!-- PASTE YOUR NOTEPAD TEXT DIRECTLY BELOW THIS LINE -->
                                                                                                                                                                                                                                                                                                                                                                                                                 
                                                                                                                                                                                                                                                                                                                                                                                                                 
@@ -281,87 +330,15 @@ div[style*="position: fixed"][style*="top"] {
                                                                                                                                                                                                                                                                                                                                                                                                                 
 
 <!-- PASTE YOUR NOTEPAD TEXT DIRECTLY ABOVE THIS LINE -->
-    </pre>
+        </pre>
+        <!-- Random Reveal Grid Overlay -->
+        <div id="grid-overlay"></div>
+      </div>
+    </div>
   </div>
-</div>
 
-<script>
-  const wrapper = document.getElementById('wrapper');
-  const container = document.getElementById('zoom-container');
-  
-  let scale = 1;
-  const minScale = 0.8; 
-  const maxScale = 15;  
-  const zoomSpeed = 0.08;
-
-  wrapper.addEventListener('wheel', (e) => {
-    e.preventDefault(); 
-    const scrollLeft = wrapper.scrollLeft;
-    const scrollTop = wrapper.scrollTop;
-    
-    const rect = wrapper.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-
-    const contentX = (scrollLeft + mouseX) / scale;
-    const contentY = (scrollTop + mouseY) / scale;
-
-    if (e.deltaY < 0) {
-      scale = Math.min(maxScale, scale + zoomSpeed * scale);
-    } else {
-      scale = Math.max(minScale, scale - zoomSpeed * scale);
-    }
-
-    container.style.transform = `scale(${scale})`;
-
-    if (scale <= 1.01) {
-      scale = 1;
-    } else {
-      wrapper.scrollLeft = (contentX * scale) - mouseX;
-      wrapper.scrollTop = (contentY * scale) - mouseY;
-    }
-  }, { passive: false });
-
-  container.addEventListener('click', () => {
-    scale = (scale === 1) ? 3 : 1;
-    if (scale === 1) {
-      wrapper.scrollLeft = 0;
-      wrapper.scrollTop = 0;
-    }
-    container.style.transform = `scale(${scale})`;
-  });
-</script>
-<script>
-  function runBootSequence() {
-    const btn = document.getElementById('start-btn');
-    const bootText = document.getElementById('boot-text');
-    const overlay = document.getElementById('boot-overlay');
-    const mapPre = document.querySelector('pre.ascii-map');
-
-    // 1. Prepare map by wrapping characters in hidden cell spans
-    let rawHTML = mapPre.innerHTML;
-    let preparedHTML = '';
-    let inTag = false;
-
-    for (let i = 0; i < rawHTML.length; i++) {
-      let char = rawHTML[i];
-      if (char === '<') inTag = true;
-      
-      if (!inTag && char !== '\n' && char !== '\r') {
-        preparedHTML += `<span class="ascii-cell">${char}</span>`;
-      } else {
-        preparedHTML += char;
-      }
-
-      if (char === '>') inTag = false;
-    }
-    mapPre.innerHTML = preparedHTML;
-
-    // Hide the start button
-    btn.style.display = 'none';
-
-    // Sequence steps
-    const sequence = [
+  <script>
+    const bootLines = [
       { text: "", delay: 300 },
       { text: "//Initializing secure communication protocol [...]", delay: 1200 },
       { text: "//Establishing connection to satellite network [...]", delay: 800 },
@@ -370,70 +347,167 @@ div[style*="position: fixed"][style*="top"] {
       { text: "//Success!", delay: 800 }
     ];
 
-    // Helper: Shuffles array for eclectic random pop-in order
-    function shuffleArray(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
+    const startContainer = document.getElementById('start-container');
+    const startBtn = document.getElementById('start-btn');
+    const bootContainer = document.getElementById('boot-sequence');
+    const mapWrapper = document.getElementById('map-wrapper');
+    const mapViewport = document.getElementById('map-viewport');
+    const gridOverlay = document.getElementById('grid-overlay');
+    const statusDisplay = document.querySelector('.status-online');
+
+    let currentLine = 0;
+
+    // Handle Start Button Click
+    startBtn.addEventListener('click', () => {
+      startContainer.style.opacity = '0';
+      setTimeout(() => {
+        startContainer.style.display = 'none';
+        bootContainer.style.display = 'block';
+        mapWrapper.style.display = 'block';
+        statusDisplay.textContent = 'CONNECTING...';
+        setupGridOverlay();
+        runBootSequence();
+      }, 500);
+    });
+
+    // Build the solid dark grid cover before boot sequence plays
+    function setupGridOverlay() {
+      const rows = 10;
+      const cols = 16;
+      gridOverlay.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+      gridOverlay.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+
+      const totalBlocks = rows * cols;
+      for (let i = 0; i < totalBlocks; i++) {
+        const block = document.createElement('div');
+        block.className = 'grid-block';
+        gridOverlay.appendChild(block);
       }
-      return array;
     }
 
-    // Helper: High-Speed Scramble Pop-In
-    function revealMapCells() {
-      const cells = Array.from(mapPre.querySelectorAll('.ascii-cell'));
-      const shuffledCells = shuffleArray(cells);
-      let index = 0;
-
-      function renderCluster() {
-        if (index >= shuffledCells.length) return;
-
-        // Pop in massive bursts (150 - 300 blocks at once)
-        const clusterSize = Math.floor(Math.random() * 150) + 150;
-        for (let i = 0; i < clusterSize && index < shuffledCells.length; i++) {
-          shuffledCells[index].classList.add('visible');
-          index++;
+    function runBootSequence() {
+      if (currentLine < bootLines.length) {
+        const lineData = bootLines[currentLine];
+        
+        if (lineData.text) {
+          const lineElement = document.createElement('div');
+          lineElement.className = 'boot-line';
+          lineElement.textContent = lineData.text;
+          bootContainer.appendChild(lineElement);
         }
 
-        // Ultra-fast timings: 10% chance of a micro-stutter (50-80ms), 90% chance of rapid tick (5-15ms)
-        const isLagging = Math.random() < 0.10;
-        const delay = isLagging 
-          ? Math.floor(Math.random() * 30) + 50  // Micro-stutter (50-80ms)
-          : Math.floor(Math.random() * 10) + 5;   // Hyper tick (5-15ms)
-
-        setTimeout(renderCluster, delay);
-      }
-
-      renderCluster();
-    }
-
-    // Main Terminal Loop
-    function printNextLine() {
-      if (currentStep < sequence.length) {
-        const line = document.createElement('div');
-        line.textContent = sequence[currentStep].text;
-        bootText.appendChild(line);
-        
-        setTimeout(() => {
-          currentStep++;
-          printNextLine();
-        }, sequence[currentStep].delay);
+        currentLine++;
+        setTimeout(runBootSequence, lineData.delay);
       } else {
-        // Fade overlay and start descrambling map cells
-        setTimeout(() => {
-          overlay.style.opacity = '0';
-          revealMapCells();
-          
-          setTimeout(() => {
-            overlay.style.display = 'none';
-          }, 600);
-        }, 400);
+        const cursor = document.createElement('span');
+        cursor.className = 'cursor';
+        bootContainer.appendChild(cursor);
+
+        statusDisplay.textContent = 'ONLINE / SECURE';
+        
+        // Show container and reveal map grid
+        mapWrapper.classList.add('visible');
+        revealMapGrid();
+
+        // Start random status glitch check loop
+        startGlitchLoop();
       }
     }
 
-    let currentStep = 0;
-    printNextLine();
-  }
-</script>
+    // Grid Block Reveal Animation
+    function revealMapGrid() {
+      const blocks = Array.from(gridOverlay.children);
+
+      // Shuffle blocks array for random order reveal
+      for (let i = blocks.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [blocks[i], blocks[j]] = [blocks[j], blocks[i]];
+      }
+
+      const totalRevealTime = 2000;
+      const interval = totalRevealTime / blocks.length;
+
+      blocks.forEach((block, index) => {
+        setTimeout(() => {
+          block.classList.add('revealed');
+        }, index * interval);
+      });
+
+      setTimeout(() => {
+        gridOverlay.remove();
+      }, totalRevealTime + 400);
+    }
+
+    // Red Glitch Indicator Easter Egg
+    function startGlitchLoop() {
+      setInterval(() => {
+        if (Math.random() < 0.02) {
+          triggerGlitch();
+        }
+      }, 4000);
+    }
+
+    function triggerGlitch() {
+      const originalText = 'ONLINE / SECURE';
+      statusDisplay.textContent = 'WHAT ARE YOU LOOKING FOR?';
+      statusDisplay.classList.add('glitch');
+
+      setTimeout(() => {
+        statusDisplay.textContent = originalText;
+        statusDisplay.classList.remove('glitch');
+      }, 1800);
+    }
+
+    // Pan & Zoom Matrix State
+    let scale = 1;
+    let pointX = 0;
+    let pointY = 0;
+    let startX = 0;
+    let startY = 0;
+    let isDragging = false;
+
+    function updateTransform() {
+      mapViewport.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
+    }
+
+    // Cursor-centered zoom
+    mapWrapper.addEventListener('wheel', (e) => {
+      e.preventDefault();
+
+      const rect = mapWrapper.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+
+      const zoomFactor = e.deltaY < 0 ? 1.15 : 0.85;
+      const newScale = Math.min(Math.max(0.4, scale * zoomFactor), 5.0);
+
+      pointX = mouseX - (mouseX - pointX) * (newScale / scale);
+      pointY = mouseY - (mouseY - pointY) * (newScale / scale);
+      scale = newScale;
+
+      updateTransform();
+    }, { passive: false });
+
+    // 360-degree panning
+    mapWrapper.addEventListener('mousedown', (e) => {
+      if (e.button !== 0) return;
+      isDragging = true;
+      startX = e.clientX - pointX;
+      startY = e.clientY - pointY;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      e.preventDefault();
+      pointX = e.clientX - startX;
+      pointY = e.clientY - startY;
+      updateTransform();
+    });
+
+    window.addEventListener('mouseup', () => {
+      isDragging = false;
+    });
+  </script>
+
 </body>
 </html>
