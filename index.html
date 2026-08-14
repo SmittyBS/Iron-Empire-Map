@@ -205,19 +205,28 @@
     .meridian { color: #ffff33; font-weight: bold; } /* Meridian Freight */
     .neutral  { color: #445566; }                   /* Unclaimed/Contested */
 
-/* --- Mobile & Google Sites Embed Adjustments --- */
+/* --- Mobile & Container Constraint Fixes --- */
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
 @media (max-width: 768px) {
   body {
     padding: 0;
-    margin: 0;
   }
 
   .terminal-container {
     width: 100vw;
+    min-height: 100vh;
     border-radius: 0;
     border-left: none;
     border-right: none;
     padding: 8px;
+    box-sizing: border-box;
   }
 
   .terminal-header {
@@ -228,13 +237,15 @@
   }
 
   .map-wrapper {
-    min-height: 70vh; /* Expands map viewport to take up mobile screen height */
+    /* Sets map viewport to scale to phone screen height */
+    height: 60vh; 
+    min-height: 350px;
     padding: 5px;
   }
 
   pre#ascii-map {
-    /* Slightly shrinks base ASCII font on small screens so more map fits before panning */
-    font-size: clamp(6px, 1.2vw, 10px); 
+    /* Slightly shrinks base ASCII character size on mobile */
+    font-size: clamp(6px, 1.1vw, 10px); 
   }
 }
 
