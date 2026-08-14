@@ -5,6 +5,73 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hello out there. I can see you.</title>
   <style>
+  /* Container and resets */
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* Ensure map viewport handles panning smoothly */
+.map-wrapper {
+  position: relative;
+  background-color: #020408;
+  border: 1px dashed rgba(0, 255, 204, 0.4);
+  padding: 15px;
+  overflow: hidden;
+  cursor: grab;
+  user-select: none;
+  min-height: 500px;
+  display: none; /* Controlled by JS */
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.map-wrapper.visible {
+  display: block;
+  opacity: 1;
+}
+
+.map-wrapper:active {
+  cursor: grabbing;
+}
+
+#map-viewport {
+  transform-origin: 0 0;
+  display: inline-block;
+  will-change: transform;
+  position: relative;
+}
+
+/* Responsive Overrides */
+@media (max-width: 768px) {
+  body {
+    padding: 0;
+  }
+
+  .terminal-container {
+    width: 100vw;
+    min-height: 100vh;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    padding: 8px;
+    box-sizing: border-box;
+  }
+
+  .map-wrapper {
+    height: 60vh; 
+    min-height: 350px;
+    padding: 5px;
+  }
+
+  pre#ascii-map {
+    font-size: clamp(6px, 1.1vw, 10px); 
+  }
+}
+  
     /* Reset & Base Styles */
     * {
       box-sizing: border-box;
@@ -566,6 +633,100 @@ html, body {
       isDragging = false;
     });
   </script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const startBtn = document.getElementById('start-btn');
+      const startContainer = document.getElementById('start-container');
+      const bootSequence = document.getElementById('boot-sequence');
+      const mapWrapper = document.getElementById('map-wrapper');
+      const mapViewport = document.getElementById('map-viewport');
+      const statusSpan = document.querySelector('.status-online');
+
+      // --- Boot Sequence Text ---
+      const bootLines = [
+        "INITIALIZING CORE SYSTEM...",
+        "CONNECTING TO SATELLITE FEED [EULOGY_NET]...",
+        "DECRYPTING FACTION TERRITORY DATA...",
+        "ESTABLISHING HIGH-RESOLUTION ASCII CANVAS...",
+        "MAP DATA RENDER COMPLETE."
+      ];
+
+      // --- Start Button Click Handler ---
+      startBtn.addEventListener('click', () => {
+        startContainer.style.display = 'none';
+        bootSequence.style.display = 'block';
+        if (statusSpan) statusSpan.textContent = 'BOOTING...';
+
+        let lineIdx = 0;
+        const printInterval = setInterval(() => {
+          if (lineIdx < bootLines.length) {
+            const p = document.createElement('div');
+            p.className = 'boot-line';
+            p.textContent = `> ${bootLines[lineIdx]}`;
+            bootSequence.appendChild(p);
+            lineIdx++;
+          } else {
+            clearInterval(printInterval);
+            setTimeout(revealMap, 600);
+          }
+        }, 300);
+      });
+
+      function revealMap() {
+        bootSequence.classList.add('hidden');
+        mapWrapper.classList.add('visible');
+        if (statusSpan) statusSpan.textContent = 'ONLINE';
+        setupPanAndZoom();
+      }
+
+      // --- Pan & Zoom Engine ---
+      function setupPanAndZoom() {
+        let scale = 1;
+        let pannedX = 0;
+        let pannedY = 0;
+        let isDragging = false;
+        let startX = 0;
+        let startY = 0;
+
+        function updateTransform() {
+          mapViewport.style.transform = `translate(${pannedX}px, ${pannedY}px) scale(${scale})`;
+        }
+
+        // Mouse Drag Panning
+        mapWrapper.addEventListener('mousedown', (e) => {
+          isDragging = true;
+          startX = e.clientX - pannedX;
+          startY = e.clientY - pannedY;
+        });
+
+        window.addEventListener('mousemove', (e) => {
+          if (!isDragging) return;
+          pannedX = e.clientX - startX;
+          pannedY = e.clientY - startY;
+          updateTransform();
+        });
+
+        window.addEventListener('mouseup', () => {
+          isDragging = false;
+        });
+
+        // Wheel Zooming
+        mapWrapper.addEventListener('wheel', (e) => {
+          e.preventDefault();
+          const zoomFactor = 0.1;
+          if (e.deltaY < 0) {
+            scale = Math.min(scale + zoomFactor, 3.0); // Max zoom 3x
+          } else {
+            scale = Math.max(scale - zoomFactor, 0.4); // Min zoom 0.4x
+          }
+          updateTransform();
+        }, { passive: false });
+      }
+    });
+  </script>
+</body>
+</html>
 
 </body>
 </html>
