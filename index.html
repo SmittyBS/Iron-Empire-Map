@@ -101,14 +101,22 @@
     }
 
     /* Boot Sequence Screen */
-    #boot-sequence {
-      min-height: 180px;
-      margin-bottom: 15px;
-      font-size: 0.95rem;
-      line-height: 1.5;
-      color: #70a3cc;
-      display: none; /* Hidden until button is clicked */
-    }
+#boot-sequence {
+  min-height: 180px;
+  margin-bottom: 15px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #70a3cc;
+  display: none; /* Hidden until button is clicked */
+  transition: opacity 0.5s ease;
+}
+
+/* Smooth fade out when map finishes loading */
+#boot-sequence.hidden {
+  opacity: 0;
+  min-height: 0;
+  margin-bottom: 0;
+}
 
     .boot-line {
       margin-bottom: 4px;
@@ -386,33 +394,39 @@
     }
 
     function runBootSequence() {
-      if (currentLine < bootLines.length) {
-        const lineData = bootLines[currentLine];
-        
-        if (lineData.text) {
-          const lineElement = document.createElement('div');
-          lineElement.className = 'boot-line';
-          lineElement.textContent = lineData.text;
-          bootContainer.appendChild(lineElement);
-        }
-
-        currentLine++;
-        setTimeout(runBootSequence, lineData.delay);
-      } else {
-        const cursor = document.createElement('span');
-        cursor.className = 'cursor';
-        bootContainer.appendChild(cursor);
-
-        statusDisplay.textContent = 'ONLINE / SECURE';
-        
-        // Show container and reveal map grid
-        mapWrapper.classList.add('visible');
-        revealMapGrid();
-
-        // Start random status glitch check loop
-        startGlitchLoop();
-      }
+  if (currentLine < bootLines.length) {
+    const lineData = bootLines[currentLine];
+    
+    if (lineData.text) {
+      const lineElement = document.createElement('div');
+      lineElement.className = 'boot-line';
+      lineElement.textContent = lineData.text;
+      bootContainer.appendChild(lineElement);
     }
+
+    currentLine++;
+    setTimeout(runBootSequence, lineData.delay);
+  } else {
+    const cursor = document.createElement('span');
+    cursor.className = 'cursor';
+    bootContainer.appendChild(cursor);
+
+    statusDisplay.textContent = 'ONLINE / SECURE';
+    
+    // Fade out and remove boot text space
+    bootContainer.classList.add('hidden');
+    setTimeout(() => {
+      bootContainer.style.display = 'none';
+    }, 500);
+
+    // Show container and reveal map grid
+    mapWrapper.classList.add('visible');
+    revealMapGrid();
+
+    // Start random status glitch check loop
+    startGlitchLoop();
+  }
+}
 
     // Grid Block Reveal Animation
     function revealMapGrid() {
