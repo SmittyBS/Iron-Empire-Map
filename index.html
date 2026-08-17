@@ -5,78 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hello out there. I can see you.</title>
   <style>
-  /* Container and resets */
-html, body {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  overflow-x: hidden;
-}
-
-/* Ensure map viewport handles panning smoothly */
-.map-wrapper {
-  position: relative;
-  background-color: #020408;
-  border: 1px dashed rgba(0, 255, 204, 0.4);
-  padding: 15px;
-  overflow: hidden;
-  cursor: grab;
-  user-select: none;
-  min-height: 500px;
-  display: none; /* Controlled by JS */
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.map-wrapper.visible {
-  display: block;
-  opacity: 1;
-}
-
-.map-wrapper:active {
-  cursor: grabbing;
-}
-
-#map-viewport {
-  transform-origin: 0 0;
-  display: inline-block;
-  will-change: transform;
-  position: relative;
-}
-
-/* Responsive Overrides */
-@media (max-width: 768px) {
-  body {
-    padding: 0;
-  }
-
-  .terminal-container {
-    width: 100vw;
-    min-height: 100vh;
-    border-radius: 0;
-    border-left: none;
-    border-right: none;
-    padding: 8px;
-    box-sizing: border-box;
-  }
-
-  .map-wrapper {
-    height: 60vh; 
-    min-height: 350px;
-    padding: 5px;
-  }
-
-  pre#ascii-map {
-    font-size: clamp(6px, 1.1vw, 10px); 
-  }
-}
-  
     /* Reset & Base Styles */
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
     }
 
     body {
@@ -89,7 +30,6 @@ html, body {
       justify-content: flex-start;
       min-height: 100vh;
       padding: 10px;
-      overflow-x: hidden;
     }
 
     /* Full-Width Terminal Wrapper */
@@ -123,7 +63,6 @@ html, body {
       transition: color 0.2s ease, text-shadow 0.2s ease;
     }
 
-    /* Glitch state override for status bar */
     .status-online.glitch {
       color: #ff0033 !important;
       text-shadow: 0 0 8px #ff0033, 0 0 15px #ff0033;
@@ -168,22 +107,21 @@ html, body {
     }
 
     /* Boot Sequence Screen */
-#boot-sequence {
-  min-height: 180px;
-  margin-bottom: 15px;
-  font-size: 0.95rem;
-  line-height: 1.5;
-  color: #70a3cc;
-  display: none; /* Hidden until button is clicked */
-  transition: opacity 0.5s ease;
-}
+    #boot-sequence {
+      min-height: 180px;
+      margin-bottom: 15px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: #70a3cc;
+      display: none;
+      transition: opacity 0.5s ease;
+    }
 
-/* Smooth fade out when map finishes loading */
-#boot-sequence.hidden {
-  opacity: 0;
-  min-height: 0;
-  margin-bottom: 0;
-}
+    #boot-sequence.hidden {
+      opacity: 0;
+      min-height: 0;
+      margin-bottom: 0;
+    }
 
     .boot-line {
       margin-bottom: 4px;
@@ -206,14 +144,17 @@ html, body {
       padding: 15px;
       overflow: hidden;
       cursor: grab;
+      -webkit-user-select: none;
       user-select: none;
       min-height: 500px;
-      display: none; /* Hidden during initial start state */
+      display: none;
       opacity: 0;
       transition: opacity 0.3s ease;
+      touch-action: none;
     }
 
     .map-wrapper.visible {
+      display: block;
       opacity: 1;
     }
 
@@ -263,59 +204,47 @@ html, body {
     }
 
     /* Faction Colors */
-    .axion    { color: #ff3333; font-weight: bold; } /* Axion Industries */
-    .savant   { color: #3399ff; font-weight: bold; } /* Savant Systems */
-    .saint    { color: #ffffff; font-weight: bold; } /* Saint Corp */
-    .satori   { color: #cc33ff; font-weight: bold; } /* Satori Enterprises */
-    .sedna    { color: #ff9900; font-weight: bold; } /* Sedna Heavy Industries */
-    .anansi   { color: #33cc33; font-weight: bold; } /* Anansi Agritech */
-    .meridian { color: #ffff33; font-weight: bold; } /* Meridian Freight */
-    .neutral  { color: #445566; }                   /* Unclaimed/Contested */
+    .axion    { color: #ff3333; font-weight: bold; }
+    .savant   { color: #3399ff; font-weight: bold; }
+    .saint    { color: #ffffff; font-weight: bold; }
+    .satori   { color: #cc33ff; font-weight: bold; }
+    .sedna    { color: #ff9900; font-weight: bold; }
+    .anansi   { color: #33cc33; font-weight: bold; }
+    .meridian { color: #ffff33; font-weight: bold; }
+    .neutral  { color: #445566; }
 
-/* --- Mobile & Container Constraint Fixes --- */
-html, body {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  overflow-x: hidden;
-}
+    /* Responsive Overrides */
+    @media (max-width: 768px) {
+      body {
+        padding: 0;
+      }
 
-@media (max-width: 768px) {
-  body {
-    padding: 0;
-  }
+      .terminal-container {
+        width: 100vw;
+        min-height: 100vh;
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+        padding: 8px;
+      }
 
-  .terminal-container {
-    width: 100vw;
-    min-height: 100vh;
-    border-radius: 0;
-    border-left: none;
-    border-right: none;
-    padding: 8px;
-    box-sizing: border-box;
-  }
+      .terminal-header {
+        font-size: 0.75rem;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+      }
 
-  .terminal-header {
-    font-size: 0.75rem;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
-  }
+      .map-wrapper {
+        height: 60vh; 
+        min-height: 350px;
+        padding: 5px;
+      }
 
-  .map-wrapper {
-    /* Sets map viewport to scale to phone screen height */
-    height: 60vh; 
-    min-height: 350px;
-    padding: 5px;
-  }
-
-  pre#ascii-map {
-    /* Slightly shrinks base ASCII character size on mobile */
-    font-size: clamp(6px, 1.1vw, 10px); 
-  }
-}
-
+      pre#ascii-map {
+        font-size: clamp(6px, 1.1vw, 10px); 
+      }
+    }
   </style>
 </head>
 <body>
@@ -457,276 +386,253 @@ html, body {
   </div>
 
   <script>
-    const bootLines = [
-      { text: "", delay: 300 },
-      { text: "//Initializing secure communication protocol [...]", delay: 1200 },
-      { text: "//Establishing connection to satellite network [...]", delay: 800 },
-      { text: "//Signal integrity: 96%", delay: 600 },
-      { text: "//Commencing data retrieval [...]", delay: 2000 },
-      { text: "//Success!", delay: 800 }
-    ];
-
-    const startContainer = document.getElementById('start-container');
-    const startBtn = document.getElementById('start-btn');
-    const bootContainer = document.getElementById('boot-sequence');
-    const mapWrapper = document.getElementById('map-wrapper');
-    const mapViewport = document.getElementById('map-viewport');
-    const gridOverlay = document.getElementById('grid-overlay');
-    const statusDisplay = document.querySelector('.status-online');
-
-    let currentLine = 0;
-
-    // Handle Start Button Click
-    startBtn.addEventListener('click', () => {
-      startContainer.style.opacity = '0';
-      setTimeout(() => {
-        startContainer.style.display = 'none';
-        bootContainer.style.display = 'block';
-        mapWrapper.style.display = 'block';
-        statusDisplay.textContent = 'CONNECTING...';
-        setupGridOverlay();
-        runBootSequence();
-      }, 500);
-    });
-
-    // Build the solid dark grid cover before boot sequence plays
-    function setupGridOverlay() {
-      const rows = 10;
-      const cols = 16;
-      gridOverlay.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-      gridOverlay.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
-
-      const totalBlocks = rows * cols;
-      for (let i = 0; i < totalBlocks; i++) {
-        const block = document.createElement('div');
-        block.className = 'grid-block';
-        gridOverlay.appendChild(block);
-      }
-    }
-
-    function runBootSequence() {
-  if (currentLine < bootLines.length) {
-    const lineData = bootLines[currentLine];
-    
-    if (lineData.text) {
-      const lineElement = document.createElement('div');
-      lineElement.className = 'boot-line';
-      lineElement.textContent = lineData.text;
-      bootContainer.appendChild(lineElement);
-    }
-
-    currentLine++;
-    setTimeout(runBootSequence, lineData.delay);
-  } else {
-    const cursor = document.createElement('span');
-    cursor.className = 'cursor';
-    bootContainer.appendChild(cursor);
-
-    statusDisplay.textContent = 'ONLINE / SECURE';
-    
-    // Fade out and remove boot text space
-    bootContainer.classList.add('hidden');
-    setTimeout(() => {
-      bootContainer.style.display = 'none';
-    }, 500);
-
-    // Show container and reveal map grid
-    mapWrapper.classList.add('visible');
-    revealMapGrid();
-
-    // Start random status glitch check loop
-    startGlitchLoop();
-  }
-}
-
-    // Grid Block Reveal Animation
-    function revealMapGrid() {
-      const blocks = Array.from(gridOverlay.children);
-
-      // Shuffle blocks array for random order reveal
-      for (let i = blocks.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [blocks[i], blocks[j]] = [blocks[j], blocks[i]];
-      }
-
-      const totalRevealTime = 2000;
-      const interval = totalRevealTime / blocks.length;
-
-      blocks.forEach((block, index) => {
-        setTimeout(() => {
-          block.classList.add('revealed');
-        }, index * interval);
-      });
-
-      setTimeout(() => {
-        gridOverlay.remove();
-      }, totalRevealTime + 400);
-    }
-
-    // Red Glitch Indicator Easter Egg
-    function startGlitchLoop() {
-      setInterval(() => {
-        if (Math.random() < 0.02) {
-          triggerGlitch();
-        }
-      }, 4000);
-    }
-
-    function triggerGlitch() {
-      const originalText = 'ONLINE / SECURE';
-      statusDisplay.textContent = 'WHAT ARE YOU LOOKING FOR?';
-      statusDisplay.classList.add('glitch');
-
-      setTimeout(() => {
-        statusDisplay.textContent = originalText;
-        statusDisplay.classList.remove('glitch');
-      }, 1800);
-    }
-
-    // Pan & Zoom Matrix State
-    let scale = 1;
-    let pointX = 0;
-    let pointY = 0;
-    let startX = 0;
-    let startY = 0;
-    let isDragging = false;
-
-    function updateTransform() {
-      mapViewport.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
-    }
-
-    // Cursor-centered zoom
-    mapWrapper.addEventListener('wheel', (e) => {
-      e.preventDefault();
-
-      const rect = mapWrapper.getBoundingClientRect();
-      const mouseX = e.clientX - rect.left;
-      const mouseY = e.clientY - rect.top;
-
-      const zoomFactor = e.deltaY < 0 ? 1.15 : 0.85;
-      const newScale = Math.min(Math.max(0.4, scale * zoomFactor), 5.0);
-
-      pointX = mouseX - (mouseX - pointX) * (newScale / scale);
-      pointY = mouseY - (mouseY - pointY) * (newScale / scale);
-      scale = newScale;
-
-      updateTransform();
-    }, { passive: false });
-
-    // 360-degree panning
-    mapWrapper.addEventListener('mousedown', (e) => {
-      if (e.button !== 0) return;
-      isDragging = true;
-      startX = e.clientX - pointX;
-      startY = e.clientY - pointY;
-    });
-
-    window.addEventListener('mousemove', (e) => {
-      if (!isDragging) return;
-      e.preventDefault();
-      pointX = e.clientX - startX;
-      pointY = e.clientY - startY;
-      updateTransform();
-    });
-
-    window.addEventListener('mouseup', () => {
-      isDragging = false;
-    });
-  </script>
-
-<script>
     document.addEventListener('DOMContentLoaded', () => {
-      const startBtn = document.getElementById('start-btn');
       const startContainer = document.getElementById('start-container');
-      const bootSequence = document.getElementById('boot-sequence');
+      const startBtn = document.getElementById('start-btn');
+      const bootContainer = document.getElementById('boot-sequence');
       const mapWrapper = document.getElementById('map-wrapper');
       const mapViewport = document.getElementById('map-viewport');
-      const statusSpan = document.querySelector('.status-online');
+      const gridOverlay = document.getElementById('grid-overlay');
+      const statusDisplay = document.querySelector('.status-online');
 
-      // --- Boot Sequence Text ---
       const bootLines = [
-        "INITIALIZING CORE SYSTEM...",
-        "CONNECTING TO SATELLITE FEED [EULOGY_NET]...",
-        "DECRYPTING FACTION TERRITORY DATA...",
-        "ESTABLISHING HIGH-RESOLUTION ASCII CANVAS...",
-        "MAP DATA RENDER COMPLETE."
+        { text: "", delay: 300 },
+        { text: "//Initializing secure communication protocol [...]", delay: 1200 },
+        { text: "//Establishing connection to satellite network [...]", delay: 800 },
+        { text: "//Signal integrity: 96%", delay: 600 },
+        { text: "//Commencing data retrieval [...]", delay: 2000 },
+        { text: "//Success!", delay: 800 }
       ];
 
-      // --- Start Button Click Handler ---
-      startBtn.addEventListener('click', () => {
-        startContainer.style.display = 'none';
-        bootSequence.style.display = 'block';
-        if (statusSpan) statusSpan.textContent = 'BOOTING...';
+      let currentLine = 0;
 
-        let lineIdx = 0;
-        const printInterval = setInterval(() => {
-          if (lineIdx < bootLines.length) {
-            const p = document.createElement('div');
-            p.className = 'boot-line';
-            p.textContent = `> ${bootLines[lineIdx]}`;
-            bootSequence.appendChild(p);
-            lineIdx++;
-          } else {
-            clearInterval(printInterval);
-            setTimeout(revealMap, 600);
-          }
-        }, 300);
+      // Handle Start Button Click
+      startBtn.addEventListener('click', () => {
+        startContainer.style.opacity = '0';
+        setTimeout(() => {
+          startContainer.style.display = 'none';
+          bootContainer.style.display = 'block';
+          mapWrapper.style.display = 'block';
+          statusDisplay.textContent = 'CONNECTING...';
+          setupGridOverlay();
+          runBootSequence();
+        }, 500);
       });
 
-      function revealMap() {
-        bootSequence.classList.add('hidden');
-        mapWrapper.classList.add('visible');
-        if (statusSpan) statusSpan.textContent = 'ONLINE';
-        setupPanAndZoom();
+      // Build the solid dark grid cover before boot sequence plays
+      function setupGridOverlay() {
+        const rows = 10;
+        const cols = 16;
+        gridOverlay.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+        gridOverlay.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+
+        const totalBlocks = rows * cols;
+        gridOverlay.innerHTML = ''; // Ensure clean slate
+        for (let i = 0; i < totalBlocks; i++) {
+          const block = document.createElement('div');
+          block.className = 'grid-block';
+          gridOverlay.appendChild(block);
+        }
       }
 
-      // --- Pan & Zoom Engine ---
-      function setupPanAndZoom() {
-        let scale = 1;
-        let pannedX = 0;
-        let pannedY = 0;
-        let isDragging = false;
-        let startX = 0;
-        let startY = 0;
+      function runBootSequence() {
+        if (currentLine < bootLines.length) {
+          const lineData = bootLines[currentLine];
+          
+          if (lineData.text) {
+            const lineElement = document.createElement('div');
+            lineElement.className = 'boot-line';
+            lineElement.textContent = lineData.text;
+            bootContainer.appendChild(lineElement);
+          }
 
-        function updateTransform() {
-          mapViewport.style.transform = `translate(${pannedX}px, ${pannedY}px) scale(${scale})`;
+          currentLine++;
+          setTimeout(runBootSequence, lineData.delay);
+        } else {
+          const cursor = document.createElement('span');
+          cursor.className = 'cursor';
+          bootContainer.appendChild(cursor);
+
+          statusDisplay.textContent = 'ONLINE / SECURE';
+          
+          // Fade out and remove boot text space
+          bootContainer.classList.add('hidden');
+          setTimeout(() => {
+            bootContainer.style.display = 'none';
+          }, 500);
+
+          // Show container and reveal map grid
+          mapWrapper.classList.add('visible');
+          revealMapGrid();
+
+          // Start random status glitch check loop
+          startGlitchLoop();
+        }
+      }
+
+      // Grid Block Reveal Animation
+      function revealMapGrid() {
+        const blocks = Array.from(gridOverlay.children);
+
+        // Shuffle blocks array for random order reveal
+        for (let i = blocks.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [blocks[i], blocks[j]] = [blocks[j], blocks[i]];
         }
 
-        // Mouse Drag Panning
-        mapWrapper.addEventListener('mousedown', (e) => {
-          isDragging = true;
-          startX = e.clientX - pannedX;
-          startY = e.clientY - pannedY;
+        const totalRevealTime = 2000;
+        const interval = totalRevealTime / blocks.length;
+
+        blocks.forEach((block, index) => {
+          setTimeout(() => {
+            block.classList.add('revealed');
+          }, index * interval);
         });
 
-        window.addEventListener('mousemove', (e) => {
-          if (!isDragging) return;
-          pannedX = e.clientX - startX;
-          pannedY = e.clientY - startY;
-          updateTransform();
-        });
-
-        window.addEventListener('mouseup', () => {
-          isDragging = false;
-        });
-
-        // Wheel Zooming
-        mapWrapper.addEventListener('wheel', (e) => {
-          e.preventDefault();
-          const zoomFactor = 0.1;
-          if (e.deltaY < 0) {
-            scale = Math.min(scale + zoomFactor, 3.0); // Max zoom 3x
-          } else {
-            scale = Math.max(scale - zoomFactor, 0.4); // Min zoom 0.4x
-          }
-          updateTransform();
-        }, { passive: false });
+        setTimeout(() => {
+          gridOverlay.remove();
+        }, totalRevealTime + 400);
       }
+
+      // Red Glitch Indicator Easter Egg
+      function startGlitchLoop() {
+        setInterval(() => {
+          if (Math.random() < 0.02) {
+            triggerGlitch();
+          }
+        }, 4000);
+      }
+
+      function triggerGlitch() {
+        const originalText = 'ONLINE / SECURE';
+        statusDisplay.textContent = 'WHAT ARE YOU LOOKING FOR?';
+        statusDisplay.classList.add('glitch');
+
+        setTimeout(() => {
+          statusDisplay.textContent = originalText;
+          statusDisplay.classList.remove('glitch');
+        }, 1800);
+      }
+
+      // --- PAN & ZOOM ENGINE ---
+      let scale = 1;
+      let pointX = 0;
+      let pointY = 0;
+      let startX = 0;
+      let startY = 0;
+      let isDragging = false;
+
+      let initialPinchDistance = null;
+      let initialScale = 1;
+
+      function updateTransform() {
+        mapViewport.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
+      }
+
+      function getPinchDistance(touches) {
+        return Math.hypot(
+          touches[0].clientX - touches[1].clientX,
+          touches[0].clientY - touches[1].clientY
+        );
+      }
+
+      // Cursor-centered zoom (Desktop)
+      mapWrapper.addEventListener('wheel', (e) => {
+        e.preventDefault();
+
+        const rect = mapWrapper.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+
+        const zoomFactor = e.deltaY < 0 ? 1.15 : 0.85;
+        const newScale = Math.min(Math.max(0.4, scale * zoomFactor), 5.0);
+
+        pointX = mouseX - (mouseX - pointX) * (newScale / scale);
+        pointY = mouseY - (mouseY - pointY) * (newScale / scale);
+        scale = newScale;
+
+        updateTransform();
+      }, { passive: false });
+
+      // Mouse Panning (Desktop)
+      mapWrapper.addEventListener('mousedown', (e) => {
+        if (e.button !== 0) return;
+        isDragging = true;
+        startX = e.clientX - pointX;
+        startY = e.clientY - pointY;
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        e.preventDefault();
+        pointX = e.clientX - startX;
+        pointY = e.clientY - startY;
+        updateTransform();
+      });
+
+      window.addEventListener('mouseup', () => {
+        isDragging = false;
+      });
+
+      // Touch Events (Mobile Pan & Focal-Point Pinch-Zoom)
+      let touchMidX = 0;
+      let touchMidY = 0;
+
+      mapWrapper.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 1) {
+          isDragging = true;
+          startX = e.touches[0].clientX - pointX;
+          startY = e.touches[0].clientY - pointY;
+        } else if (e.touches.length === 2) {
+          isDragging = false;
+          const rect = mapWrapper.getBoundingClientRect();
+          
+          // Initial distance between two fingers
+          initialPinchDistance = getPinchDistance(e.touches);
+          initialScale = scale;
+
+          // Focal point (midpoint) between two fingers relative to viewport
+          touchMidX = ((e.touches[0].clientX + e.touches[1].clientX) / 2) - rect.left;
+          touchMidY = ((e.touches[0].clientY + e.touches[1].clientY) / 2) - rect.top;
+        }
+      }, { passive: false });
+
+      mapWrapper.addEventListener('touchmove', (e) => {
+        if (e.touches.length === 1 || e.touches.length === 2) {
+          e.preventDefault();
+        }
+
+        if (e.touches.length === 1 && isDragging) {
+          pointX = e.touches[0].clientX - startX;
+          pointY = e.touches[0].clientY - startY;
+          updateTransform();
+        } else if (e.touches.length === 2 && initialPinchDistance) {
+          const currentDistance = getPinchDistance(e.touches);
+          const factor = currentDistance / initialPinchDistance;
+          const newScale = Math.min(Math.max(initialScale * factor, 0.4), 5.0);
+
+          // Adjust origin so zoom centers on the pinch midpoint instead of (0,0)
+          pointX = touchMidX - (touchMidX - pointX) * (newScale / scale);
+          pointY = touchMidY - (touchMidY - pointY) * (newScale / scale);
+          scale = newScale;
+
+          updateTransform();
+        }
+      }, { passive: false });
+
+      mapWrapper.addEventListener('touchend', (e) => {
+        if (e.touches.length < 2) {
+          initialPinchDistance = null;
+        }
+        if (e.touches.length === 1) {
+          isDragging = true;
+          startX = e.touches[0].clientX - pointX;
+          startY = e.touches[0].clientY - pointY;
+        } else if (e.touches.length === 0) {
+          isDragging = false;
+        }
+      });
     });
   </script>
-</body>
-</html>
-
 </body>
 </html>
